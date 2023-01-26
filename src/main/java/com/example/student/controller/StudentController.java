@@ -1,26 +1,37 @@
 package com.example.student.controller;
 
+import com.example.student.entity.Report;
 import com.example.student.entity.Student;
+import com.example.student.model.JSONStudent;
 import com.example.student.model.ResponseStudent;
+import com.example.student.repository.ReportRepo;
 import com.example.student.repository.StudentRepo;
+import com.example.student.service.DateSerivce;
+import com.example.student.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/student")
 public class StudentController {
     @Autowired
     StudentRepo studentRepo;
+    @Autowired
+    ReportRepo reportRepo;
+    @Autowired
+    ReportService reportService;
 
     @GetMapping("")
     public ResponseEntity<ResponseStudent> getALlStudent(){
-        Map<Objects, Objects> student =studentRepo.getAllStudent();
+        List<Student> student =studentRepo.getAllStudent();
         return student.isEmpty() ?
                 ResponseEntity.status(HttpStatus.OK).body(
                         new ResponseStudent("false", "Cannot get all student" , "")
@@ -30,11 +41,22 @@ public class StudentController {
                 );
     }
 
-    @PostMapping("")
-    public ResponseEntity<ResponseStudent> createStudent(@RequestBody Student student){
-        studentRepo.createStudent(student.getName(), student.getDateOfBirth(), student.getPhoneNumber(), student.getCreateTime(), student.getUpdateTime());
+    @PostMapping("/create")
+    public ResponseEntity<ResponseStudent> createStudent(@RequestBody JSONStudent jsonStudent){
+        Student student = new Student(jsonStudent.getName(),jsonStudent.getAge(), DateSerivce.converDate(jsonStudent.getDateOfBirth()), jsonStudent.getPhoneNumber(), DateSerivce.converDate(jsonStudent.getCreateTime()), DateSerivce.converDate(jsonStudent.getUpdateTime()));
+        studentRepo.save(student);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseStudent("ok", "Create Successfully", "")
         );
     }
+
+    @Scheduled(fixedDelay = 5000L)
+    void report() {
+        reportService.report(studentRepo, reportRepo);
+    }
+}
+@Configuration
+@EnableScheduling
+class schedulingConfig {
+
 }
