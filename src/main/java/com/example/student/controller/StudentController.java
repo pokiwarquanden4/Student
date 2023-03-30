@@ -21,6 +21,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/student")
+@EnableScheduling
 public class StudentController {
     @Autowired
     StudentRepo studentRepo;
@@ -50,13 +51,5 @@ public class StudentController {
         );
     }
 
-    @Scheduled(fixedDelay = 5000L)
-    void report() {
-        reportService.report(studentRepo, reportRepo);
-    }
 }
-@Configuration
-@EnableScheduling
-class schedulingConfig {
 
-}
