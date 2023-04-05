@@ -10,12 +10,12 @@ import java.util.List;
 
 @Service
 public class ReportService {
-    public static void report(StudentRepo studentRepo, ReportRepo reportRepo) {
-        List<Student> student =studentRepo.getAllStudent();
-        List<Student> upTenStudent =studentRepo.getUpTen_Student();
-        List<Student> downTenStudent =studentRepo.getDownTen_Student();
-        Report report = new Report(student.size(), upTenStudent.size(), downTenStudent.size());
-        reportRepo.save(report);
-        System.out.println("Schedule");
-    }
+//    public static void report(StudentRepo studentRepo, ReportRepo reportRepo) {
+//        List<Student> student =studentRepo.getAllStudent();
+//        List<Student> upTenStudent =studentRepo.getUpTen_Student();
+//        List<Student> downTenStudent =studentRepo.getDownTen_Student();
+//        Report report = new Report(student.size(), upTenStudent.size(), downTenStudent.size());
+//        reportRepo.save(report);
+//        System.out.println("Schedule");
+//    }
 }

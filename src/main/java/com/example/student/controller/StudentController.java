@@ -8,6 +8,7 @@ import com.example.student.repository.ReportRepo;
 import com.example.student.repository.StudentRepo;
 import com.example.student.service.DateSerivce;
 import com.example.student.service.ReportService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.query.Param;
@@ -22,6 +23,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/student")
 @EnableScheduling
+@Transactional
 public class StudentController {
     @Autowired
     StudentRepo studentRepo;
@@ -32,7 +34,7 @@ public class StudentController {
 
     @GetMapping("")
     public ResponseEntity<ResponseStudent> getALlStudent(){
-        List<Student> student =studentRepo.getAllStudent();
+        List<Student> student =studentRepo.findAll();
         return student.isEmpty() ?
                 ResponseEntity.status(HttpStatus.OK).body(
                         new ResponseStudent("false", "Cannot get all student" , "")
@@ -51,5 +53,22 @@ public class StudentController {
         );
     }
 
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<ResponseStudent> createStudent(@PathVariable("id") String id){
+        studentRepo.deleteById(Long.parseLong(id));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseStudent("ok", "Create Successfully", "")
+        );
+    }
+
+    @PostMapping("/update/{id}")
+    public ResponseEntity<ResponseStudent> updateStudent(@PathVariable("id") Long id, @RequestBody JSONStudent jsonStudent){
+        Student student = studentRepo.findByAge(12);
+        student.setName(jsonStudent.getName());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseStudent("ok", "Create Successfully", "")
+        );
+    }
 }
 
